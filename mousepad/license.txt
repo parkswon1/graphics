@@ -1,0 +1,11 @@
+Model Information:
+* title:	MSI AGILITY GD70
+* source:	https://sketchfab.com/3d-models/msi-agility-gd70-fb9935ad646549848720c2fd1bf1239b
+* author:	DRoNWiN (https://sketchfab.com/dronwin)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "MSI AGILITY GD70" (https://sketchfab.com/3d-models/msi-agility-gd70-fb9935ad646549848720c2fd1bf1239b) by DRoNWiN (https://sketchfab.com/dronwin) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

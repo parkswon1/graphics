@@ -1,0 +1,11 @@
+Model Information:
+* title:	Doorlock Onassis test
+* source:	https://sketchfab.com/3d-models/doorlock-onassis-test-633421c169884924a0189ae3487f8c7c
+* author:	pemudakamis (https://sketchfab.com/pemudakamis)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Doorlock Onassis test" (https://sketchfab.com/3d-models/doorlock-onassis-test-633421c169884924a0189ae3487f8c7c) by pemudakamis (https://sketchfab.com/pemudakamis) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

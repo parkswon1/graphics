@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Final_project</title>
+		<script src="./three.js"></script>
+        <script src="./dat.gui.js"></script>
+		<script src="./GLTFLoader.js"></script>
+		<script src="./PointerLockControls.js"></script>
+        <script src="./OrbitControls.js"></script>
+        <script src="./Stats.js"></script>
+		<style>
+			body {
+                margin: 0;
+                overflow: hidden;
+            }
+            #blocker {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0,0,0,0.5);
+			}
+
+			#instructions {
+				width: 100%;
+				height: 100%;
+
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+
+				text-align: center;
+				font-size: 14px;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="blocker">
+			<div id="instructions">
+				<p style="font-size:36px">
+					Click to play
+				</p>
+				<p>
+					Move: WASD<br/>
+					Jump: SPACE<br/>
+					Look: MOUSE
+				</p>
+			</div>
+		</div>
+		<script>
+			var mixer;
+            const velocity = new THREE.Vector3();
+	    	const direction = new THREE.Vector3();
+			
+            let raycaster;
+
+	    	let moveForward = false;
+	    	let moveBackward = false;
+	    	let moveLeft = false;
+	    	let moveRight = false;
+	    	let canJump = false;
+
+			function init() {
+    			var scene = new THREE.Scene(); 
+				scene.fog = new THREE.Fog( 0xffdddd, 0, 750 );
+				const loader = new THREE.GLTFLoader();//로더
+
+			    var camera = new THREE.PerspectiveCamera
+				(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+				const gui = new dat.GUI();
+
+			    var renderer = new THREE.WebGLRenderer();
+			    renderer.setClearColor(new THREE.Color(0x000000));
+			    renderer.setSize(window.innerWidth, window.innerHeight);
+				renderer.shadowMap.enabled = true;
+
+				const controls = new THREE.OrbitControls(camera, renderer.domElement);
+                camera.position.set(-100, 10, 50);
+                controls.update();
+				const controls1p = new THREE.PointerLockControls( camera, document.body );
+                const blocker = document.getElementById( 'blocker' );
+				const instructions = document.getElementById( 'instructions' );
+
+				instructions.addEventListener( 'click', function () {
+						controls1p.lock();
+				} );
+
+				controls1p.addEventListener( 'lock', function () {
+
+						instructions.style.display = 'none';
+						blocker.style.display = 'none';
+
+				} );
+
+				controls1p.addEventListener( 'unlock', function () {
+
+						blocker.style.display = 'block';
+						instructions.style.display = '';
+
+				} );
+
+				const onKeyDown = function ( event ) {
+
+				switch ( event.code ) {
+
+					case 'ArrowUp':
+					case 'KeyW':
+						moveForward = true;
+						break;
+
+					case 'ArrowLeft':
+					case 'KeyA':
+						moveLeft = true;
+						break;
+
+					case 'ArrowDown':
+					case 'KeyS':
+						moveBackward = true;
+						break;
+
+					case 'ArrowRight':
+					case 'KeyD':
+						moveRight = true;
+						break;
+
+					case 'Space':
+						if ( canJump === true ) velocity.y += 350;
+						canJump = false;
+						break;
+
+				}
+
+				};
+
+				const onKeyUp = function ( event ) {
+
+				switch ( event.code ) {
+
+					case 'ArrowUp':
+					case 'KeyW':
+						moveForward = false;
+						break;
+
+					case 'ArrowLeft':
+					case 'KeyA':
+						moveLeft = false;
+						break;
+
+					case 'ArrowDown':
+					case 'KeyS':
+						moveBackward = false;
+						break;
+
+					case 'ArrowRight':
+					case 'KeyD':
+						moveRight = false;
+						break;
+
+				}
+
+				};
+				document.addEventListener( 'keydown', onKeyDown );
+				document.addEventListener( 'keyup', onKeyUp );
+				raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
+
+				alight = new THREE.AmbientLight(0xffffff, 1);
+                alight.visible = false;
+                scene.add(alight);
+                gui.add(alight,"visible").name("전등")
+
+				const textureLoader = new THREE.TextureLoader(); //컴퓨터벽
+				const Wallbasecolor = textureLoader.load("wall.jpg");
+				const WallnormalMap = textureLoader.load("wall.jpg");
+                const plane1 = new THREE.Mesh(new THREE.PlaneGeometry(220, 100), new THREE.MeshStandardMaterial({
+                    map: Wallbasecolor, normalMap:WallnormalMap }))
+				plane1.position.set(-50, 0, -50);
+                scene.add(plane1)
+
+				const plane2 = new THREE.Mesh(new THREE.PlaneGeometry(170, 100), new THREE.MeshStandardMaterial({
+                    map: Wallbasecolor, normalMap:WallnormalMap })) //창쪽벽
+				plane2.position.set(50, 0, 35);
+				plane2.rotateY(-Math.PI / 2)
+                scene.add(plane2)
+
+				const plane3 = new THREE.Mesh(new THREE.PlaneGeometry(170, 100), new THREE.MeshStandardMaterial({
+                    map: Wallbasecolor, normalMap:WallnormalMap })) //정문벽
+				plane3.position.set(-160, 0, 35);
+				plane3.rotateY(Math.PI / 2)
+                scene.add(plane3)
+
+                const plane4 = new THREE.Mesh(new THREE.PlaneGeometry(123, 100), new THREE.MeshStandardMaterial({
+                    map: Wallbasecolor, normalMap:WallnormalMap })) //침대벽1
+				plane4.position.set(-11, 0, 120);
+				plane4.rotateY(Math.PI)
+                scene.add(plane4)
+
+				const plane5 = new THREE.Mesh(new THREE.PlaneGeometry(50, 100), new THREE.MeshStandardMaterial({
+                    map: Wallbasecolor, normalMap:WallnormalMap })) //침대벽2
+					plane5.position.set(-135, 0, 120);
+					plane5.rotateY(Math.PI)
+                scene.add(plane5)
+
+				const plane6 = new THREE.Mesh(new THREE.PlaneGeometry(50, 50), new THREE.MeshStandardMaterial({
+                    map: Wallbasecolor, normalMap:WallnormalMap })) //침대벽3
+					plane6.position.set(-90, 52, 120);
+					plane6.rotateY(Math.PI)
+                scene.add(plane6)
+
+				const Ceiling = new THREE.Mesh(new THREE.PlaneGeometry(220, 180), new THREE.MeshStandardMaterial({
+                    map: Wallbasecolor, normalMap:WallnormalMap })) //천장
+				Ceiling.position.set(-50, 50, 30);
+				Ceiling.rotateX(Math.PI/2)
+                scene.add(Ceiling)
+
+				const Floorbasecolor = textureLoader.load("floor.jpg"); //바닥1
+				const FloornormalMap = textureLoader.load("floor.jpg");
+				const Floor1geometry = new THREE.BoxGeometry(100, 0.5, 100);
+          		const Floor1 = new THREE.Mesh(Floor1geometry, new THREE.MeshStandardMaterial({
+                    map: Floorbasecolor, normalMap:FloornormalMap }));
+				Floor1.position.set(0, -50, 0);
+				Floor1.receiveShadow = true;
+          		scene.add(Floor1);
+				const Floor2geometry = new THREE.BoxGeometry(110, 0.5, 100); //바닥2
+          		const Floor2 = new THREE.Mesh(Floor2geometry, new THREE.MeshStandardMaterial({
+                    map: Floorbasecolor, normalMap:FloornormalMap }));
+				Floor2.position.set(-105, -50, 0);
+				Floor2.receiveShadow = true;
+          		scene.add(Floor2);
+
+				const Floor3geometry = new THREE.BoxGeometry(100, 0.5, 70); //바닥3
+          		const Floor3 = new THREE.Mesh(Floor3geometry, new THREE.MeshStandardMaterial({
+                    map: Floorbasecolor, normalMap:FloornormalMap }));
+				Floor3.position.set(0, -50, 85);
+				Floor3.receiveShadow = true;
+          		scene.add(Floor3);
+
+				const Floor4geometry = new THREE.BoxGeometry(110, 0.5, 70); //바닥4
+          		const Floor4 = new THREE.Mesh(Floor4geometry, new THREE.MeshStandardMaterial({
+                    map: Floorbasecolor, normalMap:FloornormalMap }));
+				Floor4.position.set(-105, -50, 85);
+				Floor4.receiveShadow = true;
+          		scene.add(Floor4);
+
+				const bathroomwallbasecolor = textureLoader.load("bathroomwall.jpg");
+				const bathroomwallnormalMap = textureLoader.load("bathroomwall.jpg");
+				const plane7 = new THREE.Mesh(new THREE.PlaneGeometry(47, 47), new THREE.MeshStandardMaterial({
+                    map: bathroomwallbasecolor, normalMap:bathroomwallnormalMap })) //화장실벽1
+					plane7.position.set(-96, 52, 120);
+					plane7.rotateY(0)
+                scene.add(plane7)
+
+				const plane8 = new THREE.Mesh(new THREE.PlaneGeometry(123, 100), new THREE.MeshStandardMaterial({
+                    map: bathroomwallbasecolor, normalMap:bathroomwallnormalMap })) //화장실벽2
+					plane8.position.set(-11, 0, 120);
+					plane8.rotateY(0)
+                scene.add(plane8)
+
+				const plane9 = new THREE.Mesh(new THREE.PlaneGeometry(150, 100), new THREE.MeshStandardMaterial({
+                    map: bathroomwallbasecolor, normalMap:bathroomwallnormalMap })) //화장실벽3
+					plane9.position.set(-37, 0, 220);
+					plane9.rotateY(Math.PI)
+                scene.add(plane9)
+
+				const plane10 = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), new THREE.MeshStandardMaterial({
+                    map: bathroomwallbasecolor, normalMap:bathroomwallnormalMap })) //화장실벽4
+					plane10.position.set(-112, 0, 170);
+					plane10.rotateY(Math.PI/2)
+                scene.add(plane10)
+
+				const plane11 = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), new THREE.MeshStandardMaterial({
+                    map: bathroomwallbasecolor, normalMap:bathroomwallnormalMap })) //화장실벽5
+					plane11.position.set(38, 0, 170);
+					plane11.rotateY(-Math.PI/2)
+                scene.add(plane11)
+
+				const bathfloorbasecolor = textureLoader.load("bathroomfloor.jpg"); 
+				const bathfloornormalMap = textureLoader.load("bathroomfloor.jpg");
+				const bathfloorgeometry = new THREE.BoxGeometry(150, 0.5, 100); //화장실바닥
+          		const bathfloor = new THREE.Mesh(bathfloorgeometry, new THREE.MeshStandardMaterial({
+                    map: bathfloorbasecolor, normalMap:bathfloornormalMap }));
+					bathfloor.position.set(-37, -50, 170);
+					bathfloor.receiveShadow = true;
+          		scene.add(bathfloor);
+
+				  const bathCeiling = new THREE.Mesh(bathfloorgeometry, new THREE.MeshStandardMaterial({
+                    map: bathroomwallbasecolor, normalMap:bathroomwallnormalMap })); //화장싪천장
+					bathCeiling.position.set(-37, 50, 170.05);
+					bathCeiling.receiveShadow = true;
+					bathCeiling.rotateX(Math.PI)
+          		scene.add(bathCeiling);
+
+				const citybasecolor = textureLoader.load("city.jpg"); //풍경
+				const citynormalMap = textureLoader.load("city.jpg");
+				const city = new THREE.Mesh(new THREE.PlaneGeometry(54, 48), new THREE.MeshStandardMaterial({
+                    map: citybasecolor, normalMap:citynormalMap })) 
+				city.position.set(49, 14, 10);
+				city.rotateY(-Math.PI / 2)
+                scene.add(city)
+
+				loader.load('closet/scene.gltf', //옷장1
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(30,-50,-40)
+				gltf.scene.scale.set(40,40,40)
+				gltf.scene.castShadow = true;
+					}
+				)
+
+				loader.load('closet/scene.gltf',//옷장2
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-78,-50,-40)
+				gltf.scene.scale.set(40,40,40)
+				gltf.scene.castShadow = true;
+					}
+				)
+				
+				loader.load('desk/scene.gltf', //책상
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-24,-50,-43.2)
+				gltf.scene.scale.set(0.5,0.5,0.6)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(Math.PI / 2)
+					}
+				)
+
+				loader.load('computer/scene.gltf', //컴퓨터
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(0,7,-43.6)
+				gltf.scene.scale.set(1.1,1.1,1.1)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(-Math.PI / 2)
+					}
+				)
+
+				loader.load('lg_moniter/scene.gltf', //모니터
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-10,-8,-40)
+				gltf.scene.scale.set(60,60,60)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(0)
+					}
+				)
+
+				loader.load('keyboard/scene.gltf', //키보드
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-22,-8,-38)
+				gltf.scene.scale.set(0.7,0.7,0.7)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(0)
+					}
+				)
+
+				loader.load('mouse/scene.gltf', //마우스
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-2,-8,-38)
+				gltf.scene.scale.set(0.05,0.05,0.05)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(Math.PI / 2)
+					}
+				)
+
+				loader.load('mousepad/scene.gltf', //마우스패드
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-15,-8,-38)
+				gltf.scene.scale.set(40,40,40)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(0)
+					}
+				)
+
+				loader.load('books/scene.gltf', //책
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-56,-8,-39)
+				gltf.scene.scale.set(0.2,0.3,0.3)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(Math.PI / 2)
+					}
+				)
+
+				loader.load('window/scene.gltf', //창문
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(49,-10,10)
+				gltf.scene.scale.set(0.6,0.6,0.6)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(-Math.PI / 2)
+					}
+				)
+
+				loader.load('chair2/scene.gltf', //의자
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-15,-50,-22)
+				gltf.scene.scale.set(0.5,0.5,0.5)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(-Math.PI / 3)
+					}
+				)
+
+				loader.load('bed/scene.gltf', //침대
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-3,-50,80)
+				gltf.scene.scale.set(0.5,0.5,0.5)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(-Math.PI / 2)
+					}
+				)
+
+				loader.load('aircon/scene.gltf', //에어콘
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(49,37,80)
+				gltf.scene.scale.set(0.7,0.7,0.7)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(-Math.PI / 2)
+					}
+				)
+				
+				loader.load('kitchen/scene.gltf', //주방
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-105,-50,15)
+				gltf.scene.scale.set(35,35,35)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(0)
+					}
+				)
+
+				loader.load('metaldoor/scene.gltf', //정문
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-160,-51,80)
+				gltf.scene.scale.set(0.4,0.4,0.4)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(Math.PI / 2)
+					}
+				)
+
+				loader.load('doorlock/scene.gltf', //도어락
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-190,-30,20)
+				gltf.scene.scale.set(0.8,0.8,0.8)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(-Math.PI / 2)
+					}
+				)
+
+				loader.load('door/scene.gltf', //화장실문
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-170,-49,125)
+				gltf.scene.scale.set(1,1,1)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(0)
+					}
+				)
+				loader.load('ceilinglight/scene.gltf', //전등
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-50, 50, 30)
+				gltf.scene.scale.set(10,10,10)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(0)
+					}
+				)
+				loader.load('standlight/scene.gltf', //서브등
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(30,-49,40)
+				gltf.scene.scale.set(0.5,0.5,0.5)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(0)
+					}
+				)
+
+				loader.load('fan/scene.gltf', //환풍구
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-92, 40, 220)
+				gltf.scene.scale.set(1,1,1)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(0)
+				function animate() {
+    				requestAnimationFrame(animate);
+    				gltf.scene.rotation.z += 0.05;
+    				renderer.render(scene, camera);
+					}
+					animate();
+				}
+				)
+
+				loader.load('scifilight/scene.gltf', //화장실등
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-37, 47, 170.05)
+				gltf.scene.scale.set(0.3,0.3,0.3)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateX(Math.PI)
+					}
+				)
+
+				loader.load('toilet/scene.gltf', //변기
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(-112, -50, 190.05)
+				gltf.scene.scale.set(50,50,50)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(Math.PI/2)
+					}
+				)
+
+				loader.load('mirror/scene.gltf', //거울
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(0,0,0)
+				gltf.scene.scale.set(20,20,20)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(0)
+					}
+				)
+
+				loader.load('shower/scene.gltf', //샤워
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(38, -10, 190.05)
+				gltf.scene.scale.set(50,50,50)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(-Math.PI/2)
+					}
+				)
+
+				loader.load('sink/scene.gltf', //세면대
+				function( gltf ) {
+				scene.add( gltf.scene );
+				gltf.scene.position.set(28, -10, 140.05)
+				gltf.scene.scale.set(50,50,50)
+				gltf.scene.castShadow = true;
+				gltf.scene.rotateY(Math.PI/2)
+					}
+				)
+
+
+			    document.body.appendChild(renderer.domElement);
+                var clock = new THREE.Clock();
+                renderScene();
+                function renderScene() {
+                    const delta = clock.getDelta();
+                    
+                    if ( mixer ) {
+                        
+                        mixer.update( delta );}
+
+                    //포인트락컨트롤
+					if (controls1p.isLocked === true ) {
+						raycaster.ray.origin.copy( controls1p.getObject().position );
+						raycaster.ray.origin.y -= 10;
+						const intersections = raycaster.intersectObjects( Floor1, false );
+						const onObject = intersections.length > 0;
+							velocity.x -= velocity.x * 10 * delta;
+							velocity.z -= velocity.z * 10 * delta;
+							velocity.y -= 9.8 * 100 * delta; 
+							direction.z = Number( moveForward ) - Number( moveBackward );
+							direction.x = Number( moveRight ) - Number( moveLeft );
+							direction.normalize(); // this ensures consistent movements in all directions
+							if ( moveForward || moveBackward ) velocity.z -= direction.z * 400 * delta;
+							if ( moveLeft || moveRight ) velocity.x -= direction.x* 400 * delta;
+							if ( onObject === true ) {
+								velocity.y = Math.max( 0, velocity.y );
+								canJump = true;
+							 }
+							controls1p.moveRight( - velocity.x * delta );
+							controls1p.moveForward( - velocity.z * delta );
+							controls1p.getObject().position.y += ( velocity.y * delta ); // new behavior
+							if ( controls1p.getObject().position.y < 10 ) {
+								velocity.y = 0;
+								controls1p.getObject().position.y = 10;
+								canJump = true;
+							}
+						}
+
+                    requestAnimationFrame(renderScene);
+
+                    renderer.render(scene, camera);
+
+                }
+            }
+
+			window.onload = init;
+		</script>
+	</body>
+</html>

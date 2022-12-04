@@ -1,0 +1,11 @@
+Model Information:
+* title:	Stand Light 1
+* source:	https://sketchfab.com/3d-models/stand-light-1-d6ac91c7fce84d29b2a8c6253d7f3d8f
+* author:	khanhnguyen1189 (https://sketchfab.com/khanhnguyen1189)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Stand Light 1" (https://sketchfab.com/3d-models/stand-light-1-d6ac91c7fce84d29b2a8c6253d7f3d8f) by khanhnguyen1189 (https://sketchfab.com/khanhnguyen1189) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Kitchen Model
+* source:	https://sketchfab.com/3d-models/kitchen-model-98d72e77adc94af2883f5d20d5644675
+* author:	Roleks (https://sketchfab.com/Roleks)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Kitchen Model" (https://sketchfab.com/3d-models/kitchen-model-98d72e77adc94af2883f5d20d5644675) by Roleks (https://sketchfab.com/Roleks) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -1,0 +1,11 @@
+Model Information:
+* title:	PROPELLER | FAN BLADE
+* source:	https://sketchfab.com/3d-models/propeller-fan-blade-917ed3790f7941939787ea1d8b13b2d9
+* author:	cadpractice (https://sketchfab.com/cadpractice)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "PROPELLER | FAN BLADE" (https://sketchfab.com/3d-models/propeller-fan-blade-917ed3790f7941939787ea1d8b13b2d9) by cadpractice (https://sketchfab.com/cadpractice) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
